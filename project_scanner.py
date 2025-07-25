@@ -32,14 +32,16 @@ class IgnorePatternManager:
         self.tech_ignore_patterns = []
         self.system_excludes = [
             # Project management files
-            "project_manager.py",
-            "project_scanner.py", 
-            "technology_detector.py",
-            "function_analyzer.py",
-            "TaskFlowTextManager.py",  # Added this
+            # "project_manager.py",
+            # "project_scanner.py", 
+            # "technology_detector.py",
+            # "function_analyzer.py",
+            # "TaskFlowTextManager.py",  
             "project-file.txt",
+             "__pycache__/**",
             # Common excludes
             ".git/**",
+            ".gitignore",
             ".DS_Store",
             "Thumbs.db"
         ]

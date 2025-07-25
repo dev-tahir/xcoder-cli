@@ -45,16 +45,22 @@ class TechnologyDetector:
         structure = {
             "files": [],
             "directories": [],
-            "file_extensions": set(),
-            "notable_files": []
+            "file_extensions": [],
+            "notable_files": [],
+            "files_with_extensions": []  # New field for complete filenames
         }
+        
+        file_extensions_set = set()  # Use set to avoid duplicates for extensions
         
         try:
             for item in root_path.iterdir():
                 if item.is_file():
+                    # Add complete filename with extension
+                    structure["files_with_extensions"].append(item.name)
                     structure["files"].append(item.name)
+                    
                     if item.suffix:
-                        structure["file_extensions"].add(item.suffix)
+                        file_extensions_set.add(item.suffix)
                     
                     # Mark notable files
                     notable_patterns = [
@@ -70,9 +76,10 @@ class TechnologyDetector:
         except PermissionError:
             pass
         
-        structure["file_extensions"] = list(structure["file_extensions"])
+        # Convert set to list for file_extensions
+        structure["file_extensions"] = list(file_extensions_set)
         return structure
-    
+
     def _rule_based_detection(self, project_root: str) -> List[TechnologyInfo]:
         """Rule-based technology detection"""
         root_path = Path(project_root)
@@ -122,7 +129,7 @@ class TechnologyDetector:
         prompt = f"""
         Analyze this project structure and identify the technologies being used:
         
-        Files in root directory: {', '.join(structure['files'])}
+        Files in root directory: {', '.join(structure['files_with_extensions'])}
         Directories in root: {', '.join(structure['directories'])}
         File extensions found: {', '.join(structure['file_extensions'])}
         Notable files: {', '.join(structure['notable_files'])}
@@ -147,7 +154,8 @@ class TechnologyDetector:
         
         Return ONLY the JSON array, no other text.
         """
-        
+        print("Sending AI request for technology detection...")
+        print(f"Prompt: {prompt}...")
         try:
             payload = {
                 "contents": [{

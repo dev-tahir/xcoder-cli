@@ -1,51 +1,55 @@
-Project:FB
-Description:CAPTURE AND POST CONTENT TO FACEBOOK
-technology:Browser-Extension
+Project:XCODER-CLI
+Description:PROJECT DESCRIPTION
+technology:Unknown
 PROJECT FILES INDEX:
 1. README.md
-2. background.js
-3. browser_extension.txt
-4. content_script.js
-5. icon48.png
-6. post_to_facebook.js
-7. styles.css
+2. TaskFlowTextManager.py
+3. function_analyzer.py
+4. project_chat.py
+5. project_manager.py
+6. project_scanner.py
+7. technology_detector.py
+8. unknown.txt
 
 All functions:
-1F. FACEBOOK POSTING
-Automates posting content to Facebook using a browser extension, enabling both receiving posts from a central source and sharing posts from the current page.
-Files(Index) Flow: 4 -> 2 -> 6
+1F. PROJECT SCANNING
+Scans a project directory to identify technologies used, dependencies, and potential issues, while respecting ignore patterns defined in .gitignore and technology-specific files.
+Files(Index) Flow: 6
 Implementation:
-File 2: Manages the extension's state, including tracking the active posting tab (activePostingTabId) and handling messages to orchestrate the posting process, listening for tab updates and closures to maintain state, and sending status updates to all tabs; communicates with File 4 to update the modal's status via the toggleStatus action.
-File 4: Injects a content script into Facebook pages, responsible for displaying a modal indicating the extension's posting status (receiving or sharing), and communicating with the background script (File 2) to determine whether the current tab is designated as the posting tab, calling initializeModal and updateModalStatus to change the UI.
-File 6: Automates the process of creating a post on Facebook, using injected post data, utilizing waitForElement to find UI elements like the 'Create Post' button and the content textbox, simulates typing using simulateTyping into the textbox, clicks appropriate buttons using clickCreatePost, waits for the post dialog to load, and relies on window.post to contain the posting data injected by another script (likely from a separate extension component). 
+File 6: Defines the core project scanning logic, loading ignore patterns from .gitignore, identifying technologies, and potentially analyzing function definitions; It utilizes classes and dataclasses for project file and information representation, employing the `IgnorePatternManager` to handle excluded files based on gitignore and technology-specific rules, ultimately creating `ProjectInfo` with identified technologies.
+File 6_detail: Specifically, `IgnorePatternManager` loads and manages ignore patterns, while the rest of the file uses these patterns to exclude specific file paths during the scanning process; It also contains `ProjectFile`, `ProjectInfo` dataclasses and relies on external modules like `technology_detector` and `function_analyzer` (though not fully shown here) to perform more advanced technology and code analysis.
 
-2F. CONTENT INJECTION
-Injects HTML elements and JavaScript code into webpages to display extension status, manage posting modes, and interact with the page's content based on user actions and background events.
-Files(Index) Flow: 2 -> 4 -> 2
+2F. TECHNOLOGY DETECTION
+Identifies the programming languages, frameworks, and libraries used within the project using both rule-based detection based on file names/extensions and AI-based analysis.
+Files(Index) Flow: 6 -> 7
 Implementation:
-File 2: This background script manages the extension's active state and tab interactions, using chrome.tabs APIs to track the active posting tab and send messages to content scripts (File 4) to update their status.
-File 4: This content script injects a modal window into the webpage, dynamically updating its content and styles based on the extension's active posting mode, and communicates with the background script (File 2) to verify and update its posting tab status.
+File 6: Defines the project structure (ProjectFile, ProjectInfo) and handles ignore patterns, but it primarily calls `technology_detector.py` to detect the project technologies.
+File 7: Contains the `TechnologyDetector` class which implements the core technology detection logic, including rule-based analysis and calls to an AI service to determine the technologies used in a project, and returns a list of `TechnologyInfo` objects.
 
-3F. UI INTERACTION AUTOMATION
-Automates user interactions with webpage elements, such as clicking buttons, filling forms, and handling dialogs to facilitate posting to Facebook, driven by data injected into the page.
-Files(Index) Flow: 4 -> 6
+3F. TASKFLOW TEXT MANAGEMENT
+Parses a text file containing project information, including project name, description, technology, file details, and function definitions, to create an in-memory representation of a task flow, enabling automated workflow or project execution.
+Files(Index) Flow: -> ->
 Implementation:
-File 4: The `content_script.js` handles communication with the background script to verify the current tab's status as a posting tab, initializes and updates the extension modal's display based on this status, and sets up event listeners.
-File 6: The `post_to_facebook.js` automates Facebook posting by waiting for and clicking the "Create Post" button, waiting for the post dialog to appear, and then simulating typing the post's caption into the textbox, utilizing `waitForElement`, `clickCreatePost`, `waitForPostDialog`, `clickAndTypeContent`, and `simulateTyping` functions.
+File 2: Parses a text file (defaulting to 'paste.txt') to extract project metadata, file information, and function definitions, storing them in internal dictionaries.
+File 2_TaskFlowTextManager: The main class that encapsulates the text parsing logic and stores project information.
+File 2_TaskFlowTextManager.load_project(): Loads the project data from the specified text file and calls _parse_content to process it.
+File 2_TaskFlowTextManager._parse_content(): Parses the content of the text file line by line, extracting project metadata (name, description, technology), file information, and potentially function definitions, based on line prefixes like 'Project:', 'Description:', and 'technology:'.  Currently only parses header information but provides extensibility for parsing Files and Functions.
 
-4F. TAB STATUS VERIFICATION
-Verifies whether the current browser tab is designated as the 'posting tab' for the extension, updating the extension's internal state and UI accordingly to reflect the tab's role (posting or sharing).
-Files(Index) Flow: 4 -> -> 4
+4F. PROJECT MANAGEMENT
+Provides tools for managing the project, including tasks, resources, and dependencies. The `quick_setup` function within `project_manager.py` enables interactive project configuration, allowing users to define project name, files, and functions. It loads existing project data from 'project-file.txt', prompts the user to add new functions with their name, description, involved files, and implementation details, and then saves the updated project configuration back to 'project-file.txt'.
+Files(Index) Flow: -> ->
 Implementation:
-File 4: Verifies the status of the current tab to determine if it is the designated posting tab, sending a message to the background script to verify and then updates the extension's state and modal UI based on the response.
+File 5: The `project_manager.py` file implements the core PROJECT MANAGEMENT functionality through the `quick_setup` function, which interacts with the user to define a new project or modify an existing one by loading, editing, and saving project information to a text file.
+File task_flow_text_manager: The `task_flow_text_manager.py` file (referenced via import) provides the `TaskFlowTextManager` class which is used by `project_manager.py` to load project data, add new functions, and save the modified project data; it's integral to managing the project's configuration.
 
-5F. ELEMENT WAITING AND HANDLING
-Waits for specific elements to load and become available before interacting with them, retrying with a delay and a maximum number of attempts. Includes functions for finding elements, clicking on them, and simulating user input.
-Files(Index) Flow: 6 -> 6 -> 6 -> 6
+5F. FUNCTION ANALYSIS
+Analyzes the functionality of code within the project, potentially to understand its purpose or identify potential vulnerabilities.
+Files(Index) Flow: 3 3 -> 3
 Implementation:
-File 6: Defines asynchronous functions for waiting for elements, clicking the 'Create Post' button, waiting for the post dialog to appear, clicking the textbox, and simulating typing; it uses `document.querySelector` to find elements, `setTimeout` to implement waiting, and dispatches `InputEvent` to simulate typing.
-File 6: waitForElement: Waits for an element matching the given selector to appear in the DOM, retrying up to `maxTries` times with an `interval` delay, and returns the element if found or null if not.
-File 6: clickCreatePost: Locates and clicks the 'Create Post' button, and subsequently calls `waitForPostDialog` after a successful click.
-File 6: waitForPostDialog: Waits for the post dialog textbox to appear and then calls `clickAndTypeContent` to interact with it.
-File 6: clickAndTypeContent: Clicks on the provided textbox element and calls `simulateTyping` to fill it with content.
-File 6: simulateTyping: Simulates typing text into an element by dispatching `InputEvent` for each character with a random delay between characters to mimic human typing.
+File 3: The `function_analyzer.py` file contains the `FunctionAnalyzer` class that orchestrates the entire function analysis process, including identifying, detailing, and mapping file flows of different functions within a project.
+
+6F. PROJECT CHAT INTERFACE
+Offers a chat-based interface for interacting with the project, enabling information querying, action triggering, and feedback provision, managed through a conversational context and integration with a language model API.
+Files(Index) Flow: ->
+Implementation:
+File 4: This file, `project_chat.py`, implements the core logic for the project chat interface, including managing conversation context, initializing the project, and interacting with a language model API (Gemini) for processing user requests and suggesting code changes; it defines classes for representing file changes (`FileChange`), conversation context (`ConversationContext`), and the chat manager (`ProjectChatManager`).
