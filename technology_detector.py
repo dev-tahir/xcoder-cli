@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-gemini_api_key = os.environ.get("GEMINI_API_KEY")
-gemini_api_url = os.environ.get("GEMINI_API_URL")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GEMINI_API_URL = os.environ.get("GEMINI_API_URL")
 
 @dataclass
 class TechnologyInfo:
