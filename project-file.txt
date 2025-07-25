@@ -1,0 +1,51 @@
+Project:FB
+Description:CAPTURE AND POST CONTENT TO FACEBOOK
+technology:Browser-Extension
+PROJECT FILES INDEX:
+1. README.md
+2. background.js
+3. browser_extension.txt
+4. content_script.js
+5. icon48.png
+6. post_to_facebook.js
+7. styles.css
+
+All functions:
+1F. FACEBOOK POSTING
+Automates posting content to Facebook using a browser extension, enabling both receiving posts from a central source and sharing posts from the current page.
+Files(Index) Flow: 4 -> 2 -> 6
+Implementation:
+File 2: Manages the extension's state, including tracking the active posting tab (activePostingTabId) and handling messages to orchestrate the posting process, listening for tab updates and closures to maintain state, and sending status updates to all tabs; communicates with File 4 to update the modal's status via the toggleStatus action.
+File 4: Injects a content script into Facebook pages, responsible for displaying a modal indicating the extension's posting status (receiving or sharing), and communicating with the background script (File 2) to determine whether the current tab is designated as the posting tab, calling initializeModal and updateModalStatus to change the UI.
+File 6: Automates the process of creating a post on Facebook, using injected post data, utilizing waitForElement to find UI elements like the 'Create Post' button and the content textbox, simulates typing using simulateTyping into the textbox, clicks appropriate buttons using clickCreatePost, waits for the post dialog to load, and relies on window.post to contain the posting data injected by another script (likely from a separate extension component). 
+
+2F. CONTENT INJECTION
+Injects HTML elements and JavaScript code into webpages to display extension status, manage posting modes, and interact with the page's content based on user actions and background events.
+Files(Index) Flow: 2 -> 4 -> 2
+Implementation:
+File 2: This background script manages the extension's active state and tab interactions, using chrome.tabs APIs to track the active posting tab and send messages to content scripts (File 4) to update their status.
+File 4: This content script injects a modal window into the webpage, dynamically updating its content and styles based on the extension's active posting mode, and communicates with the background script (File 2) to verify and update its posting tab status.
+
+3F. UI INTERACTION AUTOMATION
+Automates user interactions with webpage elements, such as clicking buttons, filling forms, and handling dialogs to facilitate posting to Facebook, driven by data injected into the page.
+Files(Index) Flow: 4 -> 6
+Implementation:
+File 4: The `content_script.js` handles communication with the background script to verify the current tab's status as a posting tab, initializes and updates the extension modal's display based on this status, and sets up event listeners.
+File 6: The `post_to_facebook.js` automates Facebook posting by waiting for and clicking the "Create Post" button, waiting for the post dialog to appear, and then simulating typing the post's caption into the textbox, utilizing `waitForElement`, `clickCreatePost`, `waitForPostDialog`, `clickAndTypeContent`, and `simulateTyping` functions.
+
+4F. TAB STATUS VERIFICATION
+Verifies whether the current browser tab is designated as the 'posting tab' for the extension, updating the extension's internal state and UI accordingly to reflect the tab's role (posting or sharing).
+Files(Index) Flow: 4 -> -> 4
+Implementation:
+File 4: Verifies the status of the current tab to determine if it is the designated posting tab, sending a message to the background script to verify and then updates the extension's state and modal UI based on the response.
+
+5F. ELEMENT WAITING AND HANDLING
+Waits for specific elements to load and become available before interacting with them, retrying with a delay and a maximum number of attempts. Includes functions for finding elements, clicking on them, and simulating user input.
+Files(Index) Flow: 6 -> 6 -> 6 -> 6
+Implementation:
+File 6: Defines asynchronous functions for waiting for elements, clicking the 'Create Post' button, waiting for the post dialog to appear, clicking the textbox, and simulating typing; it uses `document.querySelector` to find elements, `setTimeout` to implement waiting, and dispatches `InputEvent` to simulate typing.
+File 6: waitForElement: Waits for an element matching the given selector to appear in the DOM, retrying up to `maxTries` times with an `interval` delay, and returns the element if found or null if not.
+File 6: clickCreatePost: Locates and clicks the 'Create Post' button, and subsequently calls `waitForPostDialog` after a successful click.
+File 6: waitForPostDialog: Waits for the post dialog textbox to appear and then calls `clickAndTypeContent` to interact with it.
+File 6: clickAndTypeContent: Clicks on the provided textbox element and calls `simulateTyping` to fill it with content.
+File 6: simulateTyping: Simulates typing text into an element by dispatching `InputEvent` for each character with a random delay between characters to mimic human typing.
