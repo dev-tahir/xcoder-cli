@@ -12,11 +12,17 @@ from enum import Enum
 from project_scanner import ProjectScanner
 from TaskFlowTextManager import TaskFlowTextManager
 from function_analyzer import FunctionAnalyzer
-
+import sys
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from bundled .env file
+if getattr(sys, 'frozen', False):
+    # Running as PyInstaller bundle
+    env_path = os.path.join(sys._MEIPASS, '.env')
+    load_dotenv(env_path)
+else:
+    # Running as normal Python script
+    load_dotenv()
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 GEMINI_API_URL = os.environ.get("GEMINI_API_URL")

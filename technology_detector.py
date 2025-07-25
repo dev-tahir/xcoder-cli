@@ -4,11 +4,17 @@ import requests
 from pathlib import Path
 from typing import List, Dict, Set
 from dataclasses import dataclass
-
+import sys
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from bundled .env file
+if getattr(sys, 'frozen', False):
+    # Running as PyInstaller bundle
+    env_path = os.path.join(sys._MEIPASS, '.env')
+    load_dotenv(env_path)
+else:
+    # Running as normal Python script
+    load_dotenv()
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 GEMINI_API_URL = os.environ.get("GEMINI_API_URL")
@@ -154,8 +160,8 @@ class TechnologyDetector:
         
         Return ONLY the JSON array, no other text.
         """
-        print("Sending AI request for technology detection...")
-        print(f"Prompt: {prompt}...")
+        # print("Sending AI request for technology detection...")
+        # print(f"Prompt: {prompt}...")
         try:
             payload = {
                 "contents": [{

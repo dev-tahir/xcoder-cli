@@ -6,9 +6,15 @@ from pathlib import Path
 from typing import List, Dict, Any, Tuple
 from dataclasses import dataclass
 from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
+import sys
+# Load environment variables from bundled .env file
+if getattr(sys, 'frozen', False):
+    # Running as PyInstaller bundle
+    env_path = os.path.join(sys._MEIPASS, '.env')
+    load_dotenv(env_path)
+else:
+    # Running as normal Python script
+    load_dotenv()
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 GEMINI_API_URL = os.environ.get("GEMINI_API_URL")
